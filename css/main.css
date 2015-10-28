@@ -1,0 +1,26 @@
+img
+{
+	width: 40%;
+}
+
+form
+{
+	margin-top: 1em;
+}
+
+#star
+{
+	font-size: 20px;
+}
+
+#average_star
+{
+	font-size: 30px;
+}
+
+.pastReviews
+{
+	background-color: lightgrey;
+	margin: 10px;
+	border-radius: 5px;
+}

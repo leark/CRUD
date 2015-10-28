@@ -2,10 +2,32 @@ Parse.initialize("fenNu0bkpKIh4AdH35nwQh8Ooc0xbOUYGNit8nTa", "kh0Zpnieb5JXQm383d
 
 var Review = Parse.Object.extend("Review");
 
+$(function() {
+	$("#star").raty({
+		
+	});
+
+	$("#average_star").raty({
+
+	});
+
+	$("#r1").raty({
+		score: 1
+	});
+	$("#r2").raty({
+		score: 5
+	});
+});
+
+
 $("form").submit(function() {
 	var review = new Review();
 
-	$("#star").raty();
+	var score = $("#star").raty({
+		score: function() {
+			return $(this).attr("data-score");
+		}
+	});
 
 	$(this).find("div").each(function() {
 		var part = $(this).children();
