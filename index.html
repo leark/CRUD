@@ -8,10 +8,11 @@
 
         <title></title>
 
-        <!-- jQuery, Bootstrap -->
+        <!-- jQuery, Bootstrap, Parse -->
         <script src="https://code.jquery.com/jquery.min.js"></script>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="https://www.parsecdn.com/js/parse-1.6.0.min.js"></script>
 
         <!-- Custom files -->
         <script type="text/javascript" src="js/crud.js"></script>
@@ -26,10 +27,13 @@
                 </div>
             </div>
             <div class="row">
+                <img src="">
             </div>
-        </div>
-        <div class="container">
             <div class="row">
+                <div class="col-xs-12">
+                    <p>Average Rating</p>
+                    <p>Description</p>
+                </div>
             </div>
         </div>
         <div class="container submit">
@@ -37,10 +41,14 @@
                 <div class="col-xs-12">
                     <form>
                         <div class="form-group">
-                            <input type="text" class="form-control" id="title">
+                            <input type="text" class="form-control" id="title" placeholder="placeholder1">
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" id="review">
+                            <textarea rows="4" cols="50"  class="form-control" id="review" placeholder="placeholder2">
+                            </textarea>
+                        </div>
+                        <div class="form-group">
+                            <div id="star"></div>
                         </div>
 
                         <button type="submit" class="btn btn-success">save</button>
