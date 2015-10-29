@@ -130,20 +130,15 @@ var addItem = function(item) {
 
 var helpful = function(thumb) {
 	var query = new Parse.Query(Review);
-	query.equalTo("objectId", thumb.parent().parent().attr("id"));
+	query.equalTo("objectId", thumb.parent().parent().parent().attr("id"));
 	query.first({
-		// success: function (review) {
 		success: function (review) {
-			// review.save(null, {
-				// success: function (review) {
-					review.increment("allVotes");
-					if (thumb.attr("class").indexOf("up") > 0) {
-						review.increment("upvote");
-					}
-					review.save();
-				}
-			// })
-		// }
+			review.increment("allVotes");
+			if (thumb.attr("class").indexOf("up") > 0) {
+				review.increment("upvotes");
+			}
+			review.save();
+			getData();
+		}
 	});
-	getData();
 };
