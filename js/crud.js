@@ -5,15 +5,21 @@ var avgRating = 0;
 var numRating = 0;
 
 $(function() {
-	$("#star").raty({
-		score: 0
+
+	$("#sign-in").submit(function() {
+		signin();
 	});
 
-	$("#r1").raty({
-		score: 1
+	$("#sign-up").click(function () {
+		signup();
 	});
-	$("#r2").raty({
-		score: 5
+
+	$("header").on("click", "#sign-out", function() {
+		signout();
+	})
+
+	$("#star").raty({
+		score: 0
 	});
 
 	$("#reviews").on("click", ".i-thumb", function() {
@@ -35,7 +41,7 @@ $(function() {
 		}
 	});
 
-	$('form').submit(function() {
+	$('submission').submit(function() {
 		saving();
 		return false;
 	});
@@ -49,10 +55,11 @@ var saving = function() {
 	var review = new Review();
 
 	var score = parseInt($("#star").raty("score"), 10);
+	// remind me to sanitize the score
 	review.set("rating", score);
 
 	// rating, title, review
-	$("form").find("div").each(function() {
+	$("#submission").find("div").each(function() {
 		var part = $(this).children();
 		review.set(part.attr("id"), part.val());
 		part.val("");
@@ -127,7 +134,7 @@ var addItem = function(item) {
 	$("#reviews").append(review);
 }
 
-
+// 
 var helpful = function(thumb) {
 	var query = new Parse.Query(Review);
 	query.equalTo("objectId", thumb.parent().parent().parent().attr("id"));
@@ -142,3 +149,62 @@ var helpful = function(thumb) {
 		}
 	});
 };
+
+var signin = function() {
+	var info = [];
+
+	$("#sign-in").find("input").each(function() {
+		info.push($(this).val());
+		$(this).val("");
+	});
+
+	Parse.User.logIn(info[0], info[1], {
+		success: function(user) {
+			alert("login success");
+			// hide form in header
+			$("#sign-in").css("display", "none");
+			// add logout button
+			$("#sign-out").css("display", "inline");
+			// refresh the review section
+			getData();
+		},
+		error: function(error) {
+			console.log(error);
+		}
+	});
+}
+
+var signup = function() {
+	var user = new Parse.User();
+
+	$("#sign-in").find("input").each(function() {
+		user.set($(this).attr("id"), $(this).val());
+		$(this).val("");
+	});
+
+	user.signUp(null, {
+		success: function(user) {
+			alert("signup success");
+			// hide form in header
+			$("#sign-in").css("display", "none");
+			// add logout button
+			$("#sign-out").css("display", "inline");
+			// refresh the review section
+			getData();
+		},
+		error: function(user, error) {
+			console.log(error);
+		}
+	});
+}
+
+var signout = function() {
+	Parse.User.logOut();
+	// show form again
+	$("#sign-in").css("display", "block");
+	// remove logout button
+	$("#sign-out").css("display", "none");
+}
+
+
+// be able to delete reviews

@@ -22,6 +22,21 @@
     </head>
     <body>
     <!-- Content -->
+    <header>
+        <form class="form-inline" id="sign-in">
+            <div class="form-group">
+                <label class="sr-only" for="username">Username</label>
+                <input type="text" class="form-control" id="username" placeholder="Username">
+            </div>
+            <div class="form-group">
+                <label class="sr-only" for="password">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Password">
+            </div>
+            <button type="submit" class="btn btn-default">Sign in</button>
+            <button type="button" class="btn btn-default" id="sign-up">Sign up</button>
+        </form>
+        <button type="button" class="btn btn-default" id="sign-out">Sign out</button>
+    </header>
         <div class="container product">
             <h1>Sad Pepe</h1>
             <div class="row">
@@ -44,12 +59,14 @@
                 <div class="col-xs-12">
                     <h3>Your Review</h2>
                     <div id="star"></div>
-                    <form>
+                    <form id="submission">
                         <div class="form-group">
+                            <label class="sr-only" for="title">Your title</label>
                             <input type="text" class="form-control" id="title" placeholder="Title of your review">
                         </div>
                         <div class="form-group">
-                            <textarea rows="4" cols="50"  class="form-control" id="review" placeholder="Your thought of this product"></textarea>
+                            <label class="sr-only" for="review">Your thought here</label>
+                            <textarea rows="4" cols="50" maxlength="500" class="form-control" id="review" placeholder="Your thought of this product"></textarea>
                         </div>
 
                         <button type="submit" class="btn btn-success">save</button>
