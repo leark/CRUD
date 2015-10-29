@@ -1,6 +1,6 @@
 img
 {
-	width: 40%;
+	width: 100%;
 }
 
 form
@@ -13,9 +13,21 @@ form
 	font-size: 20px;
 }
 
-#average_star
+.product
 {
-	font-size: 30px;
+	border: black 2px solid;
+	margin-top: 20px;
+}
+
+.product p
+{
+	font-size: 20px;
+}
+
+#averageRating
+{
+	font-size: 18px;
+	display: inline;
 }
 
 .pastReviews
@@ -23,4 +35,31 @@ form
 	background-color: lightgrey;
 	margin: 10px;
 	border-radius: 5px;
+	padding-top: 10px;
+}
+
+.thumb
+{
+	text-align: right;
+	display: inline-block;
+	float: right;
+	font-size: 20px;
+}
+
+h4
+{
+	display: inline;
+	margin-left: 10px;
+}
+
+.i-thumb
+{
+	cursor: pointer;
+	margin-right: 10px;
+	margin-left: 10px;
+}
+
+.reviewedRate
+{
+	display: inline;
 }
