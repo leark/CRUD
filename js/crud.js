@@ -2,36 +2,55 @@ Parse.initialize("fenNu0bkpKIh4AdH35nwQh8Ooc0xbOUYGNit8nTa", "kh0Zpnieb5JXQm383d
 
 var Review = Parse.Object.extend("Review");
 var totalRating = 0;			// total rating added together
-var numRating = 0;			// number of ratings product has
+var numRating = 0;				// number of ratings product has
 
+// current user needs to be checked when:
+// upvoating reviews
+// deleting reviews
+
+// runs functions when page is done loading
 $(function() {
-
-	$("#sign-in").submit(function() {
-		signin();
-// empty out user and pas
-		return false;
-	});
-
-	$("#sign-up").click(function () {
-		signup();
-
-		return false;
-	});
-
-	$("header").on("click", "#sign-out", function() {
-		signout();
-
-		return false;
-	})
+	clickEvents();
+	hoverEvents();
 
 	$("#star").raty({
 		score: 0
 	});
 
+	getData();
+});
+
+// all the click events
+var clickEvents = function() {
+	$("#sign-in").submit(function() {
+		signin();
+		
+		return false;
+	});
+
+	$("#sign-up").click(function () {
+		signup();
+		return false;
+	});
+	
+	$("#sign-out").click(function() {
+		signout();
+		return false;
+	});
+
+	$('#submission').submit(function() {
+		saving();
+		return false;
+	});
+
 	$("#reviews").on("click", ".i-thumb", function() {
 		helpful($(this));
-	})
+	});
 
+}
+
+// mouseover and mouseleave events for the thumbs and trashcan
+var hoverEvents = function() {
 	$("#reviews").on("mouseover", ".i-thumb", function() {
 		if ($(this).attr("class").indexOf("up") < 0) {
 			$(this).attr("class", "fa fa-thumbs-down i-thumb");
@@ -48,11 +67,6 @@ $(function() {
 		}
 	});
 
-	$("#reviews").on("click", ".i-trash", function() {
-		purge($(this));
-	})
-
-
 	$("#reviews").on("mouseover", ".i-trash", function() {
 		$(this).attr("class", "fa fa-trash i-trash");
 		
@@ -61,54 +75,59 @@ $(function() {
 	$("#reviews").on("mouseleave", ".i-trash", function() {
 		$(this).attr("class", "fa fa-trash-o i-trash");
 	});
+}
 
-	$('submission').submit(function() {
-		saving();
-		return false;
-	});
-
-	getData();
-});
-
-
-// $('form').submit(function() {
+// checks if the user is logged in
+// if logged in then submit review to Parse
+// if not alert to sign in
 var saving = function() {
-	var review = new Review();
+	var user = Parse.User.current();
+	if (user) {
+		var review = new Review();
 
-	var score = parseInt($("#star").raty("score"), 10);
-	// remind me to sanitize the score
-	review.set("rating", score);
+		var score = parseInt($("#star").raty("score"), 10);
+		// remind me to sanitize the score
+		review.set("rating", score);
 
-	// rating, title, review
-	$("#submission").find("div").each(function() {
-		var part = $(this).children();
-		review.set(part.attr("id"), part.val());
-		part.val("");
-	});
+		// title, review
+		$("#submission").find("div").each(function() {
+			var part = $(this).children();
+			review.set(part.attr("id"), part.val());
+			console.log(part.val());
+			part.val("");
+		})
+		
+		review.set("upvotes", 0);
+		review.set("allVotes", 0);
+		review.set("user", user);
 
-	review.set("upvotes", 0);
-	review.set("allVotes", 0);
-
-	$("#star").raty({ score: 0 });
-	review.save(null, {
-	 	success:getData
-	});
+		$("#star").raty({ score: 0 });
+		review.save(null, {
+		 	success:getData
+		});
+	} else {
+		alert("You must sign in to write reviews");
+	}
 };
 
+// get data from Parse
 var getData = function() {
 	var query = new Parse.Query(Review);
 
 	// query requirement to have all 3 items
+	// and sort by when they were submitted
 	query.exists("rating");
 	query.exists("title");
 	query.exists("review");
 	query.addDescending("createdAt");
+	query.include("user");
 
 	query.find({
 		success:buildReviews
 	});
 }
 
+// use data from getData to build list of reviews
 var buildReviews = function(data) {
 	$("#reviews").empty();
 	$("#reviews").append($("<h2>").text("Reviews"));
@@ -123,7 +142,9 @@ var buildReviews = function(data) {
 	});
 }
 
+// add reviews to the page
 var addItem = function(item) {
+	var author = item.get("user");
 	var review = $("<div>").addClass("row");
 	review.attr("id", item.id);
 	var reviewContent = $("<div>").addClass("col-xs-12 pastReviews");
@@ -142,7 +163,7 @@ var addItem = function(item) {
 	reviewContent.append(thumbs);
 
 	var date = item.get("createdAt");
-	reviewContent.append($("<p class='date'>").text(date));
+	reviewContent.append($("<p class='date'>").text("by " + author.username + " at " + date));
 	reviewContent.append($("<p>").text(item.get("review")));
 	
 	var votes = item.get("allVotes");
@@ -153,9 +174,18 @@ var addItem = function(item) {
 
 	var trash = $("<i class='fa fa-trash-o i-trash'></i>");
 	trash.click(function() {
-		item.destroy({
-			success: getData
-		})
+		var user = Parse.User.current();
+		if (user) {
+			if (user.id == author.id) {
+				item.destroy({
+					success: getData
+				})
+			} else {
+				alert("You can only delete your own reviews");
+			}
+		} else {
+			alert("You must sign in to delete your reviews");
+		}
 	})
 
 	reviewContent.append($("<div class='delete'>").html(trash));
@@ -163,34 +193,30 @@ var addItem = function(item) {
 	$("#reviews").append(review);
 }
 
-// 
+// increments thumbs up and thumbs down for the reviews
 var helpful = function(thumb) {
 	var query = new Parse.Query(Review);
 	query.equalTo("objectId", thumb.parent().parent().parent().attr("id"));
 	query.first({
 		success: function (review) {
-			review.increment("allVotes");
-			if (thumb.attr("class").indexOf("up") > 0) {
-				review.increment("upvotes");
+			var user = Parse.User.current();
+			if (user) {
+				// if (review.get("user").id )
+				review.increment("allVotes");
+				if (thumb.attr("class").indexOf("up") > 0) {
+					review.increment("upvotes");
+				}
+				review.save();
+				getData();
+			} else {
+				alert("You must sign in to rate reviews");
 			}
-			review.save();
-			getData();
 		}
 	});
 };
 
-var helpful = function(trash) {
-	var query = new Parse.Query(Review)
-}
-
+// sign in to Parse
 var signin = function() {
-	// var info = [];
-
-	// $("#sign-in").find("input").each(function() {
-	// 	info.push($(this).val());
-	// 	$(this).val("");
-	// });
-
 	var username = $("#username").val();
 	var password = $("#password").val();
 
@@ -205,8 +231,10 @@ var signin = function() {
 	);
 }
 
+// clears user values and shows sign out button
 var loginS = function() {
-	console.log("login success");
+	$("#username").val("");
+	$("#password").val("");
 	// hide form in header
 	$("#sign-in").css("display", "none");
 	// add logout button
@@ -215,6 +243,7 @@ var loginS = function() {
 	getData();
 }
 
+// sign up new user
 var signup = function() {
 	var user = new Parse.User();
 
@@ -225,20 +254,15 @@ var signup = function() {
 
 	user.signUp(null, {
 		success: function(user) {
-			alert("signup success");
-			// hide form in header
-			$("#sign-in").css("display", "none");
-			// add logout button
-			$("#sign-out").css("display", "inline");
-			// refresh the review section
-			getData();
+			loginS()
 		},
 		error: function(user, error) {
-			console.log(error);
+			console.log(error)
 		}
 	});
 }
 
+// sign out
 var signout = function() {
 	Parse.User.logOut();
 	// show form again
