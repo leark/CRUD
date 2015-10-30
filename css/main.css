@@ -1,3 +1,16 @@
+body
+{
+	background-image: url("../img/fade.png");
+	background-repeat: repeat-x;
+	background-position: top center;
+	background-color: #FFFFEE;
+}
+
+h4
+{
+	display: inline;
+}
+
 header
 {
 	text-align: right;
@@ -13,6 +26,7 @@ form
 {
 	margin-top: 1em;
 }
+
 
 .form-inline
 {
@@ -32,7 +46,6 @@ form
 
 .product
 {
-	border: black 2px solid;
 	margin-top: 7px;
 }
 
@@ -49,13 +62,27 @@ form
 
 .pastReviews
 {
-	background-color: lightgrey;
+	background-color: #f0e0d6;
+	border: 1px solid #D9BFB7;
+	border-left: none;
+	border-top: none;
 	margin: 10px;
-	border-radius: 5px;
 	padding-top: 10px;
+	color: #800000;
 }
 
-.thumb
+.name
+{
+	color: #117743;
+	font-weight: bold;
+}
+
+.greentxt
+{
+	color: #789922;
+}
+
+.thumb, .delete
 {
 	text-align: right;
 	display: inline-block;
@@ -63,22 +90,27 @@ form
 	font-size: 20px;
 }
 
-h4
+#rh4
 {
-	display: inline;
 	margin-left: 10px;
 }
 
-.i-thumb
+.i-thumb, .i-trash
 {
 	cursor: pointer;
 	margin-right: 10px;
 	margin-left: 10px;
+	margin-bottom: 10px
 }
 
 .reviewedRate
 {
 	display: inline;
+}
+
+.help
+{
+	float: left;
 }
 
 @media screen and (max-width: 768px) {

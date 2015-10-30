@@ -1,21 +1,27 @@
 Parse.initialize("fenNu0bkpKIh4AdH35nwQh8Ooc0xbOUYGNit8nTa", "kh0Zpnieb5JXQm383d0MgWaLJIsOukSHNp8sg3mX");
 
 var Review = Parse.Object.extend("Review");
-var avgRating = 0;
-var numRating = 0;
+var totalRating = 0;			// total rating added together
+var numRating = 0;			// number of ratings product has
 
 $(function() {
 
 	$("#sign-in").submit(function() {
 		signin();
+// empty out user and pas
+		return false;
 	});
 
 	$("#sign-up").click(function () {
 		signup();
+
+		return false;
 	});
 
 	$("header").on("click", "#sign-out", function() {
 		signout();
+
+		return false;
 	})
 
 	$("#star").raty({
@@ -33,12 +39,27 @@ $(function() {
 			$(this).attr("class", "fa fa-thumbs-up i-thumb");
 		}
 	});
+
 	$("#reviews").on("mouseleave", ".i-thumb", function() {
 		if ($(this)	.attr("class").indexOf("up") < 0) {
 			$(this).attr("class", "fa fa-thumbs-o-down i-thumb");
 		} else {
 			$(this).attr("class", "fa fa-thumbs-o-up i-thumb");
 		}
+	});
+
+	$("#reviews").on("click", ".i-trash", function() {
+		purge($(this));
+	})
+
+
+	$("#reviews").on("mouseover", ".i-trash", function() {
+		$(this).attr("class", "fa fa-trash i-trash");
+		
+	});
+
+	$("#reviews").on("mouseleave", ".i-trash", function() {
+		$(this).attr("class", "fa fa-trash-o i-trash");
 	});
 
 	$('submission').submit(function() {
@@ -97,7 +118,7 @@ var buildReviews = function(data) {
 	});
 
 	$("#averageRating").raty({
-		score: avgRating / numRating,
+		score: totalRating / numRating,
 		readOnly: true
 	});
 }
@@ -107,7 +128,7 @@ var addItem = function(item) {
 	review.attr("id", item.id);
 	var reviewContent = $("<div>").addClass("col-xs-12 pastReviews");
 	
-	avgRating += item.get("rating");
+	totalRating += item.get("rating");
 	numRating++;
 
 	reviewContent.append($("<div class='reviewedRate'>").raty({ 
@@ -115,7 +136,7 @@ var addItem = function(item) {
 		width: 150,
 		readOnly: true
 	}));
-	reviewContent.append($("<h4>").text(item.get("title")));
+	reviewContent.append($("<h4 id='rh4'>").text(item.get("title")));
 	var thumbs = $("<div>").addClass("thumb");
 	thumbs.html("<i class='fa fa-thumbs-o-up i-thumb' title='You find this helpful'></i><i class='fa fa-thumbs-o-down i-thumb' title='You find this not helpful'></i>");
 	reviewContent.append(thumbs);
@@ -130,6 +151,14 @@ var addItem = function(item) {
 		reviewContent.append($("<p class='help'>").text(upvote + " out of " + votes + " people found this review helpful"));
 	}
 
+	var trash = $("<i class='fa fa-trash-o i-trash'></i>");
+	trash.click(function() {
+		item.destroy({
+			success: getData
+		})
+	})
+
+	reviewContent.append($("<div class='delete'>").html(trash));
 	review.append(reviewContent);
 	$("#reviews").append(review);
 }
@@ -150,28 +179,40 @@ var helpful = function(thumb) {
 	});
 };
 
+var helpful = function(trash) {
+	var query = new Parse.Query(Review)
+}
+
 var signin = function() {
-	var info = [];
+	// var info = [];
 
-	$("#sign-in").find("input").each(function() {
-		info.push($(this).val());
-		$(this).val("");
-	});
+	// $("#sign-in").find("input").each(function() {
+	// 	info.push($(this).val());
+	// 	$(this).val("");
+	// });
 
-	Parse.User.logIn(info[0], info[1], {
-		success: function(user) {
-			alert("login success");
-			// hide form in header
-			$("#sign-in").css("display", "none");
-			// add logout button
-			$("#sign-out").css("display", "inline");
-			// refresh the review section
-			getData();
+	var username = $("#username").val();
+	var password = $("#password").val();
+
+	// Parse.User.logIn(info[0], info[1], {
+	Parse.User.logIn(username, password).then(
+		function(user) {
+			loginS()
 		},
-		error: function(error) {
-			console.log(error);
+		function(error) {
+			console.log(error)
 		}
-	});
+	);
+}
+
+var loginS = function() {
+	console.log("login success");
+	// hide form in header
+	$("#sign-in").css("display", "none");
+	// add logout button
+	$("#sign-out").css("display", "inline");
+	// refresh the review section
+	getData();
 }
 
 var signup = function() {
@@ -206,5 +247,3 @@ var signout = function() {
 	$("#sign-out").css("display", "none");
 }
 
-
-// be able to delete reviews
