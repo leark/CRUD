@@ -153,26 +153,40 @@ var addItem = function(item) {
 	totalRating += item.get("rating");
 	numRating++;
 
+	// adds star rating
 	reviewContent.append($("<div class='reviewedRate'>").raty({ 
 		score: item.get("rating"),
 		width: 150,
 		readOnly: true
 	}));
+
+	// adds title
 	reviewContent.append($("<h4 id='rh4'>").text(item.get("title")));
+
+	// adds the thumbs up and thumbs down
 	var thumbs = $("<div>").addClass("thumb");
 	thumbs.html("<i class='fa fa-thumbs-o-up i-thumb' title='You find this helpful'></i><i class='fa fa-thumbs-o-down i-thumb' title='You find this not helpful'></i>");
 	reviewContent.append(thumbs);
 
-	var date = item.get("createdAt");
-	reviewContent.append($("<p class='date'>").text("by " + author.get("username") + " at " + date));
+	// creates the line with username and date it was created and adds it
+	var date = " at " + item.get("createdAt");
+	var username = $("<span class='name'>").text(author.get("username"));
+	var dateLine = $("<p class='date'>").text("by ");
+	dateLine.append(username);
+	dateLine.append(date);
+	reviewContent.append(dateLine);
+
+	// adds the review
 	reviewContent.append($("<p>").text(item.get("review")));
 	
+	// adds how many found this helpful
 	var votes = item.get("allVotes");
 	if (votes > 0) {
 		var upvote = item.get("upvotes");
 		reviewContent.append($("<p class='help'>").text(upvote + " out of " + votes + " people found this review helpful"));
 	}
 
+	// adds trash icon
 	var trash = $("<i class='fa fa-trash-o i-trash'></i>");
 	trash.click(function() {
 		var user = Parse.User.current();

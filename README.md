@@ -15,3 +15,4 @@ I implemented the sign in feature (sign in to write reviews, can only delete you
 ##### Did you encounter any problems in this challenge we should warn students about in the future? How can we make the challenge better?
 
 Can't think of them right now
+Also, how many people found review helpful only shows up if there's at least one vote
