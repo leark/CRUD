@@ -33,6 +33,12 @@ form
 	margin-top: 7px;
 }
 
+#welcome
+{
+	display: inline-block;
+	padding-right: 10px;
+}
+
 #sign-out
 {
 	margin-top: 7px;

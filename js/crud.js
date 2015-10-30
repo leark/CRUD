@@ -17,6 +17,11 @@ $(function() {
 		score: 0
 	});
 
+	// checks if there's a session going on
+	if (Parse.User.current()) {
+		loginS();
+	}
+
 	getData();
 });
 
@@ -272,6 +277,9 @@ var loginS = function() {
 	$("#password").val("");
 	// hide form in header
 	$("#sign-in").css("display", "none");
+	// adds welcome message
+	var user = Parse.User.current();
+	$("#sign-out").before($("<p id='welcome'>").text("Welcome " + user.get("username")));
 	// add logout button
 	$("#sign-out").css("display", "inline");
 	// refresh the review section
@@ -302,6 +310,8 @@ var signout = function() {
 	Parse.User.logOut();
 	// show form again
 	$("#sign-in").css("display", "block");
+	// remove welcome message
+	$("#welcome").remove();
 	// remove logout button
 	$("#sign-out").css("display", "none");
 }
