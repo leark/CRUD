@@ -100,6 +100,7 @@ var saving = function() {
 		review.set("upvotes", 0);
 		review.set("allVotes", 0);
 		review.set("user", user);
+		review.set("ratedUsers", user.id);
 
 		$("#star").raty({ score: 0 });
 		review.save(null, {
@@ -200,20 +201,40 @@ var helpful = function(thumb) {
 	query.first({
 		success: function (review) {
 			var user = Parse.User.current();
+			var author = review.get("user");
 			if (user) {
-				// if (review.get("user").id )
-				review.increment("allVotes");
-				if (thumb.attr("class").indexOf("up") > 0) {
-					review.increment("upvotes");
+				if (user.id != author.id) {
+					var ratedUsers = review.get("ratedUsers");
+					if (!ratedBefore(user.id, ratedUsers)) {
+						review.increment("allVotes");
+						if (thumb.attr("class").indexOf("up") > 0) {
+							review.increment("upvotes");
+						}
+						review.addUnique("ratedUsers", user.id);
+						review.save();
+						getData();
+					} else {
+						alert("You can only rate once per review");
+					}
+				} else {
+					alert("You cannot rate your own review");
 				}
-				review.save();
-				getData();
 			} else {
 				alert("You must sign in to rate reviews");
 			}
 		}
 	});
 };
+
+// returns true if user is in users
+var ratedBefore = function(user, users) {
+    for (var i = 0; i < users.length; i++) {
+        if (user == users[i]) {
+            return true;
+        }
+    }
+    return false; 
+}
 
 // sign in to Parse
 var signin = function() {
