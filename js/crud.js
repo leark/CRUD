@@ -163,7 +163,7 @@ var addItem = function(item) {
 	reviewContent.append(thumbs);
 
 	var date = item.get("createdAt");
-	reviewContent.append($("<p class='date'>").text("by " + author.username + " at " + date));
+	reviewContent.append($("<p class='date'>").text("by " + author.get("username") + " at " + date));
 	reviewContent.append($("<p>").text(item.get("review")));
 	
 	var votes = item.get("allVotes");
