@@ -105,7 +105,7 @@ var saving = function() {
 		review.set("upvotes", 0);
 		review.set("allVotes", 0);
 		review.set("user", user);
-		review.set("ratedUsers", user.id);
+		review.addUnique("ratedUsers", user.id);
 
 		$("#star").raty({ score: 0 });
 		review.save(null, {
